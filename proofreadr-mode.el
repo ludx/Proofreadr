@@ -27,11 +27,9 @@
 ;; Usage
 ;;
 ;; (require 'proofreadr-mode)
-;; (add-hook 'text-mode-hook 'turn-on-proofreadr-mode)
-;; (add-hook 'org-mode-hook 'turn-on-proofreadr-mode)
+;; (add-hook 'text-mode-hook 'proofreadr-mode)
+;; (add-hook 'org-mode-hook 'proofreadr-mode)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-;;; Code:
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Customization
@@ -44,8 +42,8 @@
   :type '(boolean)
   :group 'proofreadr-mode)
 
-(defcustom proofreadr-passive-voice t
-  "Whether to check for passive voice"
+(defcustom proofreadr-verbose-word t
+  "Whether to check for verbose Chinese words"
   :type '(boolean)
   :group 'proofreadr-mode)
 
@@ -79,24 +77,24 @@
              proofreadr-lexical-illusions-background-color
 	     nil t nil t nil nil)
 
-;; Passive voice face
+;; Verbose word face
 
-(defcustom proofreadr-passive-voice-foreground-color "Gray"
-  "Passive voice face foreground colour"
+(defcustom proofreadr-verbose-word-foreground-color "Gray"
+  "Verbose word face foreground colour"
   :group 'proofreadr-mode)
 
-(defcustom proofreadr-passive-voice-background-color "White"
-  "Passive voice face background color"
+(defcustom proofreadr-verbose-word-background-color "White"
+  "Verbose word face background color"
   :group 'proofreadr-mode)
 
-(defcustom proofreadr-font-lock-passive-voice-face 'font-lock-passive-voice-face
-  "The face for passive voice words in proofreadr mode"
+(defcustom proofreadr-font-lock-verbose-word-face 'font-lock-verbose-word-face
+  "The face for verbose word words in proofreadr mode"
   :group 'proofreadr-mode)
 
-(make-face 'proofreadr-font-lock-passive-voice-face)
-(modify-face 'proofreadr-font-lock-passive-voice-face
-             proofreadr-passive-voice-foreground-color
-             proofreadr-passive-voice-background-color nil t nil t nil nil)
+(make-face 'proofreadr-font-lock-verbose-word-face)
+(modify-face 'proofreadr-font-lock-verbose-word-face
+             proofreadr-verbose-word-foreground-color
+             proofreadr-verbose-word-background-color nil t nil t nil nil)
 
 ;; Weasel words face
 
@@ -142,22 +140,25 @@
 (defconst proofreadr-lexical-illusions-regex "\\b\\(\\w+\\)\\W+\\(\\1\\)\\b")
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Passive voice
+;; Verbose Word
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defconst proofreadr-passive-voice-regex "\\b\\(am\\|are\\|were\\|being\\|is\\|been\\|was\\|be\\)\\s-+\\(\\w+ed\\|awoken\\|been\\|born\\|beat\\|become\\|begun\\|bent\\|beset\\|bet\\|bid\\|bidden\\|bound\\|bitten\\|bled\\|blown\\|broken\\|bred\\|brought\\|broadcast\\|built\\|burnt\\|burst\\|bought\\|cast\\|caught\\|chosen\\|clung\\|come\\|cost\\|crept\\|cut\\|dealt\\|dug\\|dived\\|done\\|drawn\\|dreamt\\|driven\\|drunk\\|eaten\\|fallen\\|fed\\|felt\\|fought\\|found\\|fit\\|fled\\|flung\\|flown\\|forbidden\\|forgotten\\|foregone\\|forgiven\\|forsaken\\|frozen\\|gotten\\|given\\|gone\\|ground\\|grown\\|hung\\|heard\\|hidden\\|hit\\|held\\|hurt\\|kept\\|knelt\\|knit\\|known\\|laid\\|led\\|leapt\\|learnt\\|left\\|lent\\|let\\|lain\\|lighted\\|lost\\|made\\|meant\\|met\\|misspelt\\|mistaken\\|mown\\|overcome\\|overdone\\|overtaken\\|overthrown\\|paid\\|pled\\|proven\\|put\\|quit\\|read\\|rid\\|ridden\\|rung\\|risen\\|run\\|sawn\\|said\\|seen\\|sought\\|sold\\|sent\\|set\\|sewn\\|shaken\\|shaven\\|shorn\\|shed\\|shone\\|shod\\|shot\\|shown\\|shrunk\\|shut\\|sung\\|sunk\\|sat\\|slept\\|slain\\|slid\\|slung\\|slit\\|smitten\\|sown\\|spoken\\|sped\\|spent\\|spilt\\|spun\\|spit\\|split\\|spread\\|sprung\\|stood\\|stolen\\|stuck\\|stung\\|stunk\\|stridden\\|struck\\|strung\\|striven\\|sworn\\|swept\\|swollen\\|swum\\|swung\\|taken\\|taught\\|torn\\|told\\|thought\\|thrived\\|thrown\\|thrust\\|trodden\\|understood\\|upheld\\|upset\\|woken\\|worn\\|woven\\|wed\\|wept\\|wound\\|won\\|withheld\\|withstood\\|wrung\\|written\\)\\b")
+(defconst proofreadr-verbose-word-regex "\\(\\cc+\\)\\1+")
+
+;; 只处理两个重复中文字符 \\(\\cc\\{1,2\\}\\)\\1+
+;; 但CPU占用率没有区别
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Weasel words
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defconst proofreadr-weasel-words-regex "\\b\\(many\\|various\\|very\\|fairly\\|several\\|extremely\\|exceedingly\\|quite\\|remarkably\\|few\\|surprisingly\\|mostly\\|largely\\|huge\\|tiny\\|\\(\\(are\\|is\\) a number\\)\\|excellent\\|interestingly\\|significantly\\|substantially\\|clearly\\|vast\\|relatively\\|completely\\)\\b")
+(defconst proofreadr-weasel-words-regex "\\(帐号\\|部份\\|其它\\|图型\\|分枝\\|登陆\\|步道\\|当作\\|c\\+\\+\\|:\\|,\\|繁琐\\|largely\\|huge\\|tiny\\|\\(\\(are\\|is\\) a number\\)\\|excellent\\|interestingly\\|significantly\\|substantially\\|clearly\\|vast\\|relatively\\|completely\\)")
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Proofreadr
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defconst proofreadr-jargon-regex "\\(a priori\\|ad hoc\\|有的时候\\|affirmation\\|affirm\\|affirms\\|alterity\\|altermodern\\|aporia\\|aporetic\\|appropriates\\|appropriation\\|archetypal\\|archetypical\\|archetype\\|archetypes\\|autonomous\\|autonomy\\|baudrillardian\\|baudrillarian\\|commodification\\|committed\\|commitment\\|commonalities\\|contemporaneity\\|context\\|contexts\\|contextual\\|contextualise\\|contextualises\\|contextualisation\\|contextialize\\|contextializes\\|contextualization\\|contextuality\\|convention\\|conventional\\|conventions\\|coterminous\\|critique\\|cunning\\|cunningly\\|death of the author\\|debunk\\|debunked\\|debunking\\|debunks\\|deconstruct\\|deconstruction\\|deconstructs\\|deleuzian\\|desire\\|desires\\|dialectic\\|dialectical\\|dialectically\\|discourse\\|discursive\\|disrupt\\|disrupts\\|engage\\|engagement\\|engages\\|episteme\\|epistemic\\|ergo\\|fetish\\|fetishes\\|fetishise\\|fetishised\\|fetishize\\|fetishized\\|gaze\\|gender\\|gendered\\|historicise\\|historicisation\\|historicize\\|historicization\\|hegemonic\\|hegemony\\|identity\\|identity politics\\|intensifies\\|intensify\\|intensifying\\|interrogate\\|interrogates\\|interrogation\\|intertextual\\|intertextuality\\|irony\\|ironic\\|ironical\\|ironically\\|ironisation\\|ironization\\|ironises\\|ironizes\\|jouissance\\|juxtapose\\|juxtaposes\\|juxtaposition\\|lacanian\\|lack\\|loci\\|locus\\|locuses\\|matrix\\|mise en abyme\\|mocking\\|mockingly\\|modalities\\|modality\\|myth\\|mythologies\\|mythology\\|myths\\|narrative\\|narrativisation\\|narrativization\\|narrativity\\|nexus\\|nodal\\|node\\|normative\\|normativity\\|notion\\|notions\\|objective\\|objectivity\\|objectivities\\|objet petit a\\|ontology\\|ontological\\|operate\\|operates\\|otherness\\|othering\\|paradigm\\|paradigmatic\\|paradigms\\|parody\\|parodic\\|parodies\\|physicality\\|plenitude\\|poetics\\|popular notions\\|position\\|post hoc\\|post internet\\|post-internet\\|postmodernism\\|postmodernist\\|postmodernity\\|postmodern\\|practice\\|practise\\|praxis\\|problematic\\|problematics\\|problematise\\|problematize\\|proposition\\|qua\\|reading\\|readings\\|reification\\|relation\\|relational\\|relationality\\|relations\\|representation\\|representations\\|rhizomatic\\|rhizome\\|simulacra\\|simulacral\\|simulation\\|simulationism\\|simulationism\\|situate\\|situated\\|situates\\|stereotype\\|stereotypes\\|strategy\\|strategies\\|subjective\\|subjectivity\\|subjectivities\\|subvert\\|subversion\\|subverts\\|text\\|textual\\|textuality\\|thinker\\|thinkers\\|trajectory\\|transgress\\|transgresses\\|transgression\\|transgressive\\|unfolding\\|undermine\\|undermining\\|undermines\\|work\\|works\\|wry\\|wryly\\|zizekian\\)")
+(defconst proofreadr-jargon-regex "\\(\\cc [a-z]\\|[a-z] \\cc\\|,\\|有的时候\\|等等\\|美金\\|下图\\|上图\\|左图\\|右图\\|但是\\|->\\|通讯\\|\"\\|\(\\|\)\\|比如\\|上表\\|下表\\|左表\\|右表\\|里面\\|已经\\|所以\\|去年\\|前年\\|今年\\|明年\\)")
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Highlighting
@@ -179,8 +180,8 @@
 (defun proofreadr-lexical-illusions-search-for-keyword (limit)
   (proofreadr-search-for-keyword proofreadr-lexical-illusions-regex limit))
 
-(defun proofreadr-passive-voice-search-for-keyword (limit)
-  (proofreadr-search-for-keyword proofreadr-passive-voice-regex limit))
+(defun proofreadr-verbose-word-search-for-keyword (limit)
+  (proofreadr-search-for-keyword proofreadr-verbose-word-regex limit))
 
 (defun proofreadr-weasel-words-search-for-keyword (limit)
   (proofreadr-search-for-keyword proofreadr-weasel-words-regex limit))
@@ -192,9 +193,9 @@
   '((proofreadr-lexical-illusions-search-for-keyword 
      (2 'proofreadr-font-lock-lexical-illusions-face t))))
 
-(defconst proofreadr-passivekwlist
-  '((proofreadr-passive-voice-search-for-keyword 
-     (0 'proofreadr-font-lock-passive-voice-face t))))
+(defconst proofreadr-verbosekwlist
+  '((proofreadr-verbose-word-search-for-keyword 
+     (0 'proofreadr-font-lock-verbose-word-face t))))
 
 (defconst proofreadr-weaselkwlist
   '((proofreadr-weasel-words-search-for-keyword 
@@ -207,8 +208,8 @@
 (defun proofreadr-add-keywords ()
   (when proofreadr-lexical-illusions
     (font-lock-add-keywords nil proofreadr-lexicalkwlist))
-  (when proofreadr-passive-voice
-    (font-lock-add-keywords nil proofreadr-passivekwlist))
+  (when proofreadr-verbose-word
+    (font-lock-add-keywords nil proofreadr-verbosekwlist))
   (when proofreadr-weasel-words
     (font-lock-add-keywords nil proofreadr-weaselkwlist))
   (when proofreadr-jargon
@@ -216,7 +217,7 @@
 
 (defun proofreadr-remove-keywords ()
   (font-lock-remove-keywords nil proofreadr-lexicalkwlist)
-  (font-lock-remove-keywords nil proofreadr-passivekwlist)
+  (font-lock-remove-keywords nil proofreadr-verbosekwlist)
   (font-lock-remove-keywords nil proofreadr-weaselkwlist)
   (font-lock-remove-keywords nil proofreadr-kwlist))
 
@@ -229,7 +230,7 @@
 
 
 ;;;###autoload
-(define-minor-mode proofreadr-mode "Highlight passive voice, weasel words and proofreadr jargon in text, and provide useful text metrics"
+(define-minor-mode proofreadr-mode "Highlight verbose word, weasel words and proofreadr jargon in text, and provide useful text metrics"
   :lighter " AB"
   :keymap proofreadr-mode-keymap
   :group 'proofreadr-mode
