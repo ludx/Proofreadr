@@ -42,7 +42,7 @@
   :type '(boolean)
   :group 'proofreadr-mode)
 
-(defcustom proofreadr-verbose-word t
+(defcustom proofreadr-verbose-words t
   "Whether to check for verbose Chinese words"
   :type '(boolean)
   :group 'proofreadr-mode)
@@ -77,24 +77,24 @@
              proofreadr-lexical-illusions-background-color
 	     nil t nil t nil nil)
 
-;; Verbose word face
+;; Verbose words face
 
-(defcustom proofreadr-verbose-word-foreground-color "Gray"
-  "Verbose word face foreground colour"
+(defcustom proofreadr-verbose-words-foreground-color "Gray"
+  "Verbose words face foreground colour"
   :group 'proofreadr-mode)
 
-(defcustom proofreadr-verbose-word-background-color "White"
-  "Verbose word face background color"
+(defcustom proofreadr-verbose-words-background-color "White"
+  "Verbose words face background color"
   :group 'proofreadr-mode)
 
-(defcustom proofreadr-font-lock-verbose-word-face 'font-lock-verbose-word-face
-  "The face for verbose word words in proofreadr mode"
+(defcustom proofreadr-font-lock-verbose-words-face 'font-lock-verbose-words-face
+  "The face for verbose words in proofreadr mode"
   :group 'proofreadr-mode)
 
-(make-face 'proofreadr-font-lock-verbose-word-face)
-(modify-face 'proofreadr-font-lock-verbose-word-face
-             proofreadr-verbose-word-foreground-color
-             proofreadr-verbose-word-background-color nil t nil t nil nil)
+(make-face 'proofreadr-font-lock-verbose-words-face)
+(modify-face 'proofreadr-font-lock-verbose-words-face
+             proofreadr-verbose-words-foreground-color
+             proofreadr-verbose-words-background-color nil t nil t nil nil)
 
 ;; Weasel words face
 
@@ -140,10 +140,10 @@
 (defconst proofreadr-lexical-illusions-regex "\\b\\(\\w+\\)\\W+\\(\\1\\)\\b")
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Verbose Word
+;; Verbose Words
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defconst proofreadr-verbose-word-regex "\\(\\cc+\\)\\1+")
+(defconst proofreadr-verbose-words-regex "\\(\\cc+\\)\\1+")
 
 ;; 只处理两个重复中文字符 \\(\\cc\\{1,2\\}\\)\\1+
 ;; 但CPU占用率没有区别
@@ -152,13 +152,16 @@
 ;; Weasel words
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defconst proofreadr-weasel-words-regex "\\(帐号\\|部份\\|其它\\|图型\\|分枝\\|登陆\\|步道\\|当作\\|c\\+\\+\\|:\\|,\\|繁琐\\|largely\\|huge\\|tiny\\|\\(\\(are\\|is\\) a number\\)\\|excellent\\|interestingly\\|significantly\\|substantially\\|clearly\\|vast\\|relatively\\|completely\\)")
+;; 「100个最常见的错别字」 http://www.yuwen123.com/Article/200512/17313.html
+
+(defconst proofreadr-weasel-words-regex "\\(帐号\\|部份\\|其它\\|图型\\|分枝\\|登陆\\|步道\\|当作\\|c\\+\\+\\|:\\|,\\|繁琐\\|按装\\|甘败下风\\|自抱自弃\\|针贬\\|泊来品\\|脉博\\|松驰\\|一愁莫展\\|穿流不息\\|精萃\\|重迭\\|渡假\\|防碍\\|幅射\\|天翻地复\\|言简意骇\\|气慨\\|一股作气\\|悬梁刺骨\\|粗旷\\|食不裹腹\\|震憾\\|凑和\\|侯车\\|迫不急待\\|既使\\|一如继往\\|草管人命\\|娇揉造作\\|挖墙角\\|一诺千斤\\|不径而走\\|峻工\\|不落巢臼\\|烩炙人口\\|打腊\\|死皮癞脸\\|兰天\\|鼎立相助\\|再接再励\\|老俩口\\|黄梁\\|了望\\|水笼头\\|杀戳\\|痉孪\\|美仑美奂\\|罗嗦\\|蛛丝蚂迹\\|萎糜不振\\|沉缅\\|默守\\|姆指\\|沤心沥血\\|凭添\\|出奇不意\\|修茸\\|亲睐\\|磬竹难书\\|入场卷\\|声名雀起\\|发韧\\|欣尝\\|谈笑风声\\|人情事故\\|有持无恐\\|追朔\\|上朔\\|鬼鬼崇崇\\|金榜提名\\|走头无路\\|趋之若骛\\|迁徒\\|洁白无暇\\|九宵\\|渲泄\\|寒喧\\|弦律\\|膺品\\|不能自己\\|尤如\\|竭泽而鱼\\|滥芋充数\\|世外桃园\\|脏款\\|醮水\\|蜇伏\\|装祯\\|饮鸠\\|\\坐阵|旁证博引\\|灸手可热\\|九洲\\|床第\\|姿意\\|编篡\\|做月子\\|英特网\\|一但\\|抽像\\)")
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Proofreadr
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; 中英文间的空格对Markdown格式做了优化
 
-(defconst proofreadr-jargon-regex "\\(\\cc [a-z]\\|[a-z] \\cc\\|,\\|有的时候\\|等等\\|美金\\|下图\\|上图\\|左图\\|右图\\|但是\\|->\\|通讯\\|\"\\|\(\\|\)\\|比如\\|上表\\|下表\\|左表\\|右表\\|里面\\|已经\\|所以\\|去年\\|前年\\|今年\\|明年\\)")
+(defconst proofreadr-jargon-regex "\\(\\cc \\ca\\|\\ca[^#\.] \\cc\\|,\\|时候\\|等等\\|美金\\|下图\\|上图\\|左图\\|右图\\|但是\\|->\\|通讯\\|\"\\|\(\\|\)\\|比如\\|上表\\|下表\\|左表\\|右表\\|里面\\|已经\\|所以\\|去年\\|前年\\|今年\\|明年\\|甲骨文\\|IO\\)")
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Highlighting
@@ -180,8 +183,8 @@
 (defun proofreadr-lexical-illusions-search-for-keyword (limit)
   (proofreadr-search-for-keyword proofreadr-lexical-illusions-regex limit))
 
-(defun proofreadr-verbose-word-search-for-keyword (limit)
-  (proofreadr-search-for-keyword proofreadr-verbose-word-regex limit))
+(defun proofreadr-verbose-words-search-for-keyword (limit)
+  (proofreadr-search-for-keyword proofreadr-verbose-words-regex limit))
 
 (defun proofreadr-weasel-words-search-for-keyword (limit)
   (proofreadr-search-for-keyword proofreadr-weasel-words-regex limit))
@@ -194,8 +197,8 @@
      (2 'proofreadr-font-lock-lexical-illusions-face t))))
 
 (defconst proofreadr-verbosekwlist
-  '((proofreadr-verbose-word-search-for-keyword 
-     (0 'proofreadr-font-lock-verbose-word-face t))))
+  '((proofreadr-verbose-words-search-for-keyword 
+     (0 'proofreadr-font-lock-verbose-words-face t))))
 
 (defconst proofreadr-weaselkwlist
   '((proofreadr-weasel-words-search-for-keyword 
@@ -208,7 +211,7 @@
 (defun proofreadr-add-keywords ()
   (when proofreadr-lexical-illusions
     (font-lock-add-keywords nil proofreadr-lexicalkwlist))
-  (when proofreadr-verbose-word
+  (when proofreadr-verbose-words
     (font-lock-add-keywords nil proofreadr-verbosekwlist))
   (when proofreadr-weasel-words
     (font-lock-add-keywords nil proofreadr-weaselkwlist))
@@ -230,7 +233,7 @@
 
 
 ;;;###autoload
-(define-minor-mode proofreadr-mode "Highlight verbose word, weasel words and proofreadr jargon in text, and provide useful text metrics"
+(define-minor-mode proofreadr-mode "Highlight verbose words, weasel words and proofreadr jargon in text, and provide useful text metrics"
   :lighter " AB"
   :keymap proofreadr-mode-keymap
   :group 'proofreadr-mode
