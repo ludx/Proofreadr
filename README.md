@@ -1,4 +1,4 @@
 Proofreadr
 ===========
 
-A Proofreader for Chinese tech articles.
+Proofreading helper for Mandarin Chinese
