@@ -3,4 +3,4 @@ Proofreadr
 
 Proofreading helper for Mandarin Chinese
 
-![](https://github.com/ludx/Proofreadr/blob/master/selfexplain.png)
+![](https://raw.github.com/ludx/Proofreadr/master/selfexplain.png)
